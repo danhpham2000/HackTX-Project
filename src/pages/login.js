@@ -8,16 +8,35 @@ const Login = () => {
 
   const handleLogin = async () => {
     // Prepare the data to send
-    const data = { username };
-
+    const data = { prompt: username };
+  
     try {
-      console.log('Login successful:');
+      // Make the POST request to your backend
+      const response = await fetch('http://0.0.0.0:8000', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+  
+      // Check if the response is okay
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      // Get the result (assuming the backend returns a JSON object)
+      const result = await response.json();
+      console.log('Result:', result);
+  
+      // Pass username to the next page if needed
       navigate(`/notes`, { state: { username } });
     } catch (error) {
       console.error('Error logging in:', error);
       // Handle errors (e.g., show an error message)
     }
   };
+  
 
   return (
     <div style={styles.pageContainer}>
@@ -89,11 +108,9 @@ const styles = {
     cursor: 'pointer',
     transition: 'background-color 0.3s ease',
   },
-};
-
-// Add hover effect to button
-styles.button[':hover'] = {
-  backgroundColor: '#0056b3',
+  buttonHover: {
+    backgroundColor: '#0056b3',
+  },
 };
 
 export default Login;

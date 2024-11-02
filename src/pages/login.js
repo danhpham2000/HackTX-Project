@@ -11,22 +11,7 @@ const Login = () => {
     const data = { username };
 
     try {
-      /*const response = await fetch('http://your-backend-api-url/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const result = await response.json();*/
       console.log('Login successful:');
-
-      // Navigate to the Notes page with the username as a parameter
       navigate(`/notes`, { state: { username } });
     } catch (error) {
       console.error('Error logging in:', error);
@@ -35,21 +20,80 @@ const Login = () => {
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '400px', margin: 'auto' }}>
-      <h1>MindLearning</h1>
-      <h2>What would you like to practice?</h2>
-      <input
-        type="text"
-        placeholder="How do I do derivatives / How do I ..."
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        style={{ display: 'block', marginBottom: '10px', padding: '8px', width: '100%' }}
-      />
-      <button onClick={handleLogin} style={{ padding: '10px', width: '100%' }}>
-        Submit
-      </button>
+    <div style={styles.pageContainer}>
+      <div style={styles.loginContainer}>
+        <h1 style={styles.title}>MindLearning</h1>
+        <h2 style={styles.subtitle}>What would you like to practice?</h2>
+        <input
+          type="text"
+          placeholder="How do I do derivatives / How do I ..."
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          style={styles.input}
+        />
+        <button onClick={handleLogin} style={styles.button}>
+          Submit
+        </button>
+      </div>
     </div>
   );
+};
+
+// Styles object
+const styles = {
+  pageContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100vh',
+    backgroundColor: '#f0f4f8',
+  },
+  loginContainer: {
+    padding: '40px',
+    maxWidth: '400px',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  },
+  title: {
+    fontSize: '28px',
+    marginBottom: '10px',
+    color: '#333',
+  },
+  subtitle: {
+    fontSize: '18px',
+    marginBottom: '20px',
+    color: '#666',
+  },
+  input: {
+    display: 'block',
+    padding: '12px',
+    width: '93%',
+    marginBottom: '15px',
+    fontSize: '16px',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
+    outline: 'none',
+  },
+  button: {
+    padding: '12px',
+    width: '100%',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#ffffff',
+    backgroundColor: '#007bff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+  },
+};
+
+// Add hover effect to button
+styles.button[':hover'] = {
+  backgroundColor: '#0056b3',
 };
 
 export default Login;

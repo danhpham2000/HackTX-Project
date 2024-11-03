@@ -13,6 +13,11 @@ const Notes = () => {
   const [numQuestions, setNumQuestions] = useState(1);
   const [difficulty, setDifficulty] = useState('easy');
 
+<<<<<<< HEAD
+=======
+
+  // Trigger fade-out before navigation
+>>>>>>> 4603b8a (Add questions)
   const handleStart = async () => {
     console.log(location.state)
     try {

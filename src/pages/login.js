@@ -1,15 +1,16 @@
-// pages/login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import backgroundImage from '../resources/pictures/cherry.jpg';
+import backgroundImage from '../resources/pictures/cherry.gif';
+import './styles.css';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const navigate = useNavigate();
+  const [fadeOut, setFadeOut] = useState(false);
 
   const handleLogin = async () => {
     const data = { prompt: username };
-  
+
     try {
       const response = await fetch('http://127.0.0.1:8000/response', {
         method: 'POST',
@@ -18,21 +19,24 @@ const Login = () => {
         },
         body: JSON.stringify(data),
       });
-  
+
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-  
+
       const result = await response.json();
       console.log('Result:', result);
-      navigate(`/notes`, { state: { username } });
+
+      // Trigger fade-out before navigation
+      setFadeOut(true);
+      setTimeout(() => navigate(`/notes`, { state: { username } }), 1000);
     } catch (error) {
       console.error('Error logging in:', error);
     }
   };
 
   return (
-    <div style={styles.pageContainer}>
+    <div className={`page-container ${fadeOut ? 'fade-out' : ''}`} style={styles.pageContainer}>
       <div style={styles.background} />
       <div style={styles.loginContainer}>
         <h1 style={styles.title}>MindLearning</h1>
@@ -62,13 +66,13 @@ const styles = {
     position: 'relative', // Position for the inner container
   },
   background: {
-    Flex: 1,
+    flex: 1, // Changed to lowercase 'flex'
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundImage: 'url(${backgroundImage})', // Change to your image path
+    backgroundImage: `url(${backgroundImage})`, // Use backticks for template literals
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     filter: 'blur(5px)', // Apply blur effect to the background only

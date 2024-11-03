@@ -90,7 +90,7 @@ const styles = {
     zIndex: 1, // Ensure this is on top of the blurred background
   },
   title: {
-    fontSize: '28px',
+    fontSize: '40px',
     marginBottom: '10px',
     color: '#333',
   },

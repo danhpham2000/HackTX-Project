@@ -1,16 +1,17 @@
-// pages/notes.js
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './styles.css';
 import backgroundImage from '../resources/pictures/class.jpg';
 
-const Notes = () => {
+const Summary = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { username } = location.state || {};
   const [showPage, setShowPage] = useState(true);
   const [numQuestions, setNumQuestions] = useState(1);
   const [difficulty, setDifficulty] = useState('easy');
+  const [userPrompt, setUserPrompt] = useState(''); // New state for prompt input
+  const [fadeOut, setFadeOut] = useState(false);
 
   // Trigger fade-out before navigation
   const handleStart = async () => {
@@ -25,8 +26,9 @@ const Notes = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ numQuestion: numQuestions, difficulty: difficulty }),
+          body: JSON.stringify({ numQuestion: numQuestions, difficulty, userPrompt }), // Include userPrompt in request
         });
+
         console.log('#ofQuestions:', numQuestions, 'Diff:', difficulty);
 
         if (!response.ok) {
@@ -35,11 +37,38 @@ const Notes = () => {
 
         const data = await response.json();
 
-        // Navigate to the Questions page and pass the number of questions and difficulty
-        navigate('/questions', { state: { numQuestions, difficulty } });
+        // Navigate to the Questions page and pass the number of questions, difficulty, and user prompt
+        navigate('/questions', { state: { numQuestions, difficulty, userPrompt } });
       }, 1000); // Match this to the duration of the fade-out animation
     } catch (error) {
       console.error('Error:', error);
+    }
+  };
+
+  const handleLogin = async () => {
+    const data = { prompt: userPrompt };
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/response', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const result = await response.json();
+      console.log('Result:', result);
+
+      // Trigger fade-out before navigation
+      setFadeOut(true);
+      setTimeout(() => navigate(`/notes`, { state: { username } }), 1000);
+    } catch (error) {
+      console.error('Error logging in:', error);
     }
   };
 
@@ -48,27 +77,28 @@ const Notes = () => {
       style={{ 
         ...styles.pageContainer, 
         backgroundImage: `url(${backgroundImage})`, 
-        backgroundSize: 'cover',
         backgroundAttachment: 'fixed',
+        backgroundSize: 'cover',
         backgroundPosition: 'center' 
       }} 
       className={showPage ? 'fade-in' : 'fade-out'}
     >
       <div style={styles.overlay}></div> {/* New overlay for background blur */}
       <div style={styles.paperContainer}>
-        <h1 style={styles.title}>Hello, {username}!</h1>
+        <h1 style={styles.title}>Summary</h1>
         <p style={styles.description}>
-            Here are the notes for your requested topic.
+            Here you will be presented the summary of your quiz
             
             The AI would give the following if applicable:
-            - Definition 
-            - How it works
-            - any additional information...
+            - results
+            - areas of improvement
+            - suggestions on extra learning
+            - related materials
         </p>
 
         {/* Box for practice problem options */}
         <div style={styles.optionsBox}>
-          <h2 style={styles.optionsTitle}>Practice Problem Options</h2>
+          <h2 style={styles.optionsTitle}>Practice Again?</h2>
 
           {/* Number of Questions */}
           <div style={styles.inputGroup}>
@@ -108,6 +138,31 @@ const Notes = () => {
           >
             Start
           </button>
+          
+          {/* Prompt Input */}
+          <div style={styles.inputGroup}>
+          <h2 style={styles.optionsTitle}>Different Question/Subject?</h2>
+            <label style={styles.label}>
+              Enter a Prompt (optional):
+              <input
+                type="text"
+                value={userPrompt}
+                onChange={(e) => setUserPrompt(e.target.value)}
+                style={styles.input}
+                placeholder="e.g., Math concepts, history facts..."
+              />
+            </label>
+          </div>
+
+            {/* Start Button */}
+            <button 
+            style={styles.startButton} 
+            onClick={handleLogin}
+          >
+            Submit
+          </button>
+
+
         </div>
       </div>
     </div>
@@ -180,7 +235,7 @@ const styles = {
   input: {
     marginLeft: '10px',
     padding: '5px',
-    width: '80px',
+    width: '80%',
     borderRadius: '4px',
     border: '1px solid #ccc',
   },
@@ -200,6 +255,7 @@ const styles = {
     fontWeight: 'bold',
     cursor: 'pointer',
     transition: 'background-color 0.3s ease',
+    marginBottom: '20px'
   },
 };
 
@@ -208,4 +264,4 @@ styles.startButton[':hover'] = {
   backgroundColor: '#45a049',
 };
 
-export default Notes;
+export default Summary;

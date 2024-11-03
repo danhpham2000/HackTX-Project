@@ -1,11 +1,13 @@
 // pages/questions.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const Questions = ({ numQuestions = 10 }) => {
+const Questions = ({ numQuestions = 2 }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [attempts, setAttempts] = useState(Array(numQuestions).fill(0));
   const [feedback, setFeedback] = useState("");
+  const navigate = useNavigate(); // Use navigate for redirection
 
   // Generate questions dynamically with randomized correct answers
   const generateQuestions = (num) => {
@@ -42,9 +44,16 @@ const Questions = ({ numQuestions = 10 }) => {
   };
 
   const handleNext = () => {
-    setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-    setSelectedAnswer(null);
-    setFeedback("");
+    const nextIndex = currentQuestionIndex + 1;
+
+    if (nextIndex >= numQuestions) {
+      // If all questions have been answered, navigate to the summary
+      navigate('/summary', { state: { feedback, attempts } }); // Pass any necessary state
+    } else {
+      setCurrentQuestionIndex(nextIndex);
+      setSelectedAnswer(null);
+      setFeedback("");
+    }
   };
 
   return (

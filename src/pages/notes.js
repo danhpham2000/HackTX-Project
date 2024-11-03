@@ -3,29 +3,28 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './styles.css';
 import backgroundImage from '../resources/pictures/class.jpg';
+import ReactMarkdown from 'react-markdown';
 
 const Notes = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { username } = location.state || {};
+  const { username, result } = location.state || {};
   const [showPage, setShowPage] = useState(true);
   const [numQuestions, setNumQuestions] = useState(1);
   const [difficulty, setDifficulty] = useState('easy');
 
-  // Trigger fade-out before navigation
   const handleStart = async () => {
+    console.log(location.state)
     try {
-      // Fade out
       setShowPage(false);
 
-      // Delay navigation to allow fade-out animation to complete
       setTimeout(async () => {
         const response = await fetch('http://127.0.0.1:8000/questions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ numQuestion: numQuestions, difficulty: difficulty }),
+          body: JSON.stringify({ numQuestion: numQuestions, difficulty: difficulty, topic: username }),
         });
         console.log('#ofQuestions:', numQuestions, 'Diff:', difficulty);
 
@@ -34,10 +33,10 @@ const Notes = () => {
         }
 
         const data = await response.json();
+        console.log(data)
 
-        // Navigate to the Questions page and pass the number of questions and difficulty
-        navigate('/questions', { state: { numQuestions, difficulty } });
-      }, 1000); // Match this to the duration of the fade-out animation
+        navigate('/questions', { state: { numQuestions, difficulty, questions: data.questions } });
+      }, 1000);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -54,23 +53,21 @@ const Notes = () => {
       }} 
       className={showPage ? 'fade-in' : 'fade-out'}
     >
-      <div style={styles.overlay}></div> {/* New overlay for background blur */}
+      <div style={styles.overlay}></div>
       <div style={styles.paperContainer}>
         <h1 style={styles.title}>Hello, {username}!</h1>
         <p style={styles.description}>
-            Here are the notes for your requested topic.
-            
-            The AI would give the following if applicable:
-            - Definition 
-            - How it works
-            - any additional information...
+          Here are the notes for your requested topic.
         </p>
+        
+        {/* Render Markdown content, left-aligned */}
+        <ReactMarkdown style={styles.markdownContent}>
+          {result.Response}
+        </ReactMarkdown>
 
-        {/* Box for practice problem options */}
         <div style={styles.optionsBox}>
           <h2 style={styles.optionsTitle}>Practice Problem Options</h2>
 
-          {/* Number of Questions */}
           <div style={styles.inputGroup}>
             <label style={styles.label}>
               Number of Questions:
@@ -85,7 +82,6 @@ const Notes = () => {
             </label>
           </div>
 
-          {/* Difficulty Selection */}
           <div style={styles.inputGroup}>
             <label style={styles.label}>
               Difficulty:
@@ -101,7 +97,6 @@ const Notes = () => {
             </label>
           </div>
 
-          {/* Start Button */}
           <button 
             style={styles.startButton} 
             onClick={handleStart}
@@ -114,10 +109,9 @@ const Notes = () => {
   );
 };
 
-// Styles object
 const styles = {
   pageContainer: {
-    position: 'relative', // To position overlay and paperContainer within
+    position: 'relative',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -133,20 +127,22 @@ const styles = {
     left: 0,
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.2)', // Dark overlay with slight transparency
-    backdropFilter: 'blur(10px)', // Blur effect applied here
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backdropFilter: 'blur(10px)',
     zIndex: 1,
   },
   paperContainer: {
     position: 'relative',
     maxWidth: '600px',
+    maxHeight: '80vh', // Set max height for scrollable content
     width: '100%',
     padding: '20px',
-    backgroundColor: 'rgba(255, 255, 255, 0.85)', // Slight transparency for paper effect
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
     borderRadius: '8px',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)', // Soft shadow to mimic paper floating
-    textAlign: 'center',
-    zIndex: 2, // Place above overlay
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+    textAlign: 'left', // Set textAlign to left here
+    zIndex: 2,
+    overflowY: 'auto', // Enable vertical scrolling
   },
   title: {
     fontSize: '32px',
@@ -155,8 +151,16 @@ const styles = {
   description: {
     fontSize: '18px',
     color: '#666',
-    marginBottom: '30px',
+    marginBottom: '20px',
   },
+  markdownContent: {
+    textAlign: 'left', // Ensure left alignment
+    fontSize: '16px',
+    color: '#333',
+    marginBottom: '20px',
+    lineHeight: '1.6', // Optional: improve readability
+  },
+  
   optionsBox: {
     border: '1px solid #ddd',
     borderRadius: '8px',
@@ -201,11 +205,6 @@ const styles = {
     cursor: 'pointer',
     transition: 'background-color 0.3s ease',
   },
-};
-
-// Hover effect for button
-styles.startButton[':hover'] = {
-  backgroundColor: '#45a049',
 };
 
 export default Notes;

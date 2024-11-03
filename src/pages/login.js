@@ -29,7 +29,7 @@ const Login = () => {
 
       // Trigger fade-out before navigation
       setFadeOut(true);
-      setTimeout(() => navigate(`/notes`, { state: { username } }), 1000);
+      setTimeout(() => navigate(`/notes`, { state: { username, result: result } }), 1000);
     } catch (error) {
       console.error('Error logging in:', error);
     }

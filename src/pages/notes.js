@@ -1,10 +1,19 @@
 // pages/notes.js
-import React from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Notes = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { username } = location.state || {};
+
+  const [numQuestions, setNumQuestions] = useState(1);
+  const [difficulty, setDifficulty] = useState('easy');
+
+  const handleStart = () => {
+    // Navigate to the Questions page and pass the number of questions and difficulty
+    navigate('/questions', { state: { numQuestions, difficulty } });
+  };
 
   return (
     <div style={styles.pageContainer}>
@@ -23,6 +32,8 @@ const Notes = () => {
               type="number"
               min="1"
               max="10"
+              value={numQuestions}
+              onChange={(e) => setNumQuestions(e.target.value)}
               style={styles.input}
             />
           </label>
@@ -32,7 +43,11 @@ const Notes = () => {
         <div style={styles.inputGroup}>
           <label style={styles.label}>
             Difficulty:
-            <select style={styles.select}>
+            <select
+              value={difficulty}
+              onChange={(e) => setDifficulty(e.target.value)}
+              style={styles.select}
+            >
               <option value="easy">Easy</option>
               <option value="medium">Medium</option>
               <option value="hard">Hard</option>
@@ -43,7 +58,7 @@ const Notes = () => {
         {/* Start Button */}
         <button 
           style={styles.startButton} 
-          onClick={() => alert('Starting practice problems...')}
+          onClick={handleStart}
         >
           Start
         </button>

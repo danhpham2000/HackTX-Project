@@ -1,18 +1,17 @@
 // pages/login.js
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for routing
+import { useNavigate } from 'react-router-dom';
+import backgroundImage from '../resources/pictures/cherry.jpg';
 
 const Login = () => {
   const [username, setUsername] = useState('');
-  const navigate = useNavigate(); // Initialize navigate for routing
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
-    // Prepare the data to send
     const data = { prompt: username };
   
     try {
-      // Make the POST request to your backend
-      const response = await fetch('http://0.0.0.0:8000', {
+      const response = await fetch('http://127.0.0.1:8000/response', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -20,26 +19,21 @@ const Login = () => {
         body: JSON.stringify(data),
       });
   
-      // Check if the response is okay
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
   
-      // Get the result (assuming the backend returns a JSON object)
       const result = await response.json();
       console.log('Result:', result);
-  
-      // Pass username to the next page if needed
       navigate(`/notes`, { state: { username } });
     } catch (error) {
       console.error('Error logging in:', error);
-      // Handle errors (e.g., show an error message)
     }
   };
-  
 
   return (
     <div style={styles.pageContainer}>
+      <div style={styles.background} />
       <div style={styles.loginContainer}>
         <h1 style={styles.title}>MindLearning</h1>
         <h2 style={styles.subtitle}>What would you like to practice?</h2>
@@ -65,16 +59,31 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     height: '100vh',
-    backgroundColor: '#f0f4f8',
+    position: 'relative', // Position for the inner container
+  },
+  background: {
+    Flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundImage: 'url(${backgroundImage})', // Change to your image path
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    filter: 'blur(5px)', // Apply blur effect to the background only
+    zIndex: 0, // Ensure it's behind the login container
   },
   loginContainer: {
+    position: 'relative', // Position it above the blurred background
     padding: '40px',
     maxWidth: '400px',
     width: '100%',
     textAlign: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)', // Slightly transparent white background
     borderRadius: '10px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    zIndex: 1, // Ensure this is on top of the blurred background
   },
   title: {
     fontSize: '28px',
@@ -107,9 +116,6 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
     transition: 'background-color 0.3s ease',
-  },
-  buttonHover: {
-    backgroundColor: '#0056b3',
   },
 };
 

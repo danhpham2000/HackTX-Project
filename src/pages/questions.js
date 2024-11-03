@@ -1,5 +1,6 @@
 // pages/questions.js
 import React, { useState } from 'react';
+import './Questions.css'; // Assuming you create an external CSS file for styles
 
 const Questions = () => {
   const [selectedAnswers, setSelectedAnswers] = useState(Array(10).fill(null));
@@ -7,16 +8,16 @@ const Questions = () => {
   const [feedback, setFeedback] = useState(Array(10).fill(null));
 
   const questions = [
-      { question: "Question 1", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, explanation: "" },
-      { question: "Question 2", options: ["Option A", "Option B", "Option C", "Option D"], correct: 1, explanation: "" },
-      { question: "Question 3", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, explanation: "" },
-      { question: "Question 4", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, explanation: "" },
-      { question: "Question 5", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, explanation: "" },
-      { question: "Question 6", options: ["Option A", "Option B", "Option C", "Option D"], correct: 1, explanation: "" },
-      { question: "Question 7", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, explanation: "" },
-      { question: "Question 8", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, explanation: "" },
-      { question: "Question 9", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, explanation: "" },
-      { question: "Question 10", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, explanation: "" },
+      { question: "Question 1", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, explanation: "Explanation for Question 1" },
+      { question: "Question 2", options: ["Option A", "Option B", "Option C", "Option D"], correct: 1, explanation: "Explanation for Question 2" },
+      { question: "Question 3", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, explanation: "Explanation for Question 3" },
+      { question: "Question 4", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, explanation: "Explanation for Question 4" },
+      { question: "Question 5", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, explanation: "Explanation for Question 5" },
+      { question: "Question 6", options: ["Option A", "Option B", "Option C", "Option D"], correct: 1, explanation: "Explanation for Question 6" },
+      { question: "Question 7", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, explanation: "Explanation for Question 7" },
+      { question: "Question 8", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, explanation: "Explanation for Question 8" },
+      { question: "Question 9", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, explanation: "Explanation for Question 9" },
+      { question: "Question 10", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, explanation: "Explanation for Question 10" },
   ];
 
   const handleAnswer = (index, optionIndex) => {
@@ -24,21 +25,15 @@ const Questions = () => {
     newAttempts[index] += 1;
     setAttempts(newAttempts);
 
+    const newFeedback = [...feedback];
     if (optionIndex === questions[index].correct) {
-      setFeedback((prev) => {
-        const newFeedback = [...prev];
-        newFeedback[index] = `Congrats! Correct answer. ${questions[index].explanation}`;
-        return newFeedback;
-      });
+      newFeedback[index] = `🎉 Congrats! Correct answer. ${questions[index].explanation}`;
     } else {
-      setFeedback((prev) => {
-        const newFeedback = [...prev];
-        newFeedback[index] = newAttempts[index] > 1
-          ? `Incorrect. ${questions[index].explanation}`
-          : "Incorrect. Try again!";
-        return newFeedback;
-      });
+      newFeedback[index] = newAttempts[index] > 1
+        ? `❌ Incorrect. ${questions[index].explanation}`
+        : "❌ Incorrect. Try again!";
     }
+    setFeedback(newFeedback);
 
     const newSelectedAnswers = [...selectedAnswers];
     newSelectedAnswers[index] = optionIndex;
@@ -46,28 +41,19 @@ const Questions = () => {
   };
 
   return (
-    <div style={{ display: 'flex', padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      {/* Quiz Content Section */}
-      <div style={{ width: '70%' }}>
-        <h1>Quiz Title</h1>
-        <p>This quiz contains multiple-choice questions. Select the correct answer for each question.</p>
+    <div className="quiz-container">
+      <div className="quiz-content">
+        <h1 className="quiz-title">Quiz Title</h1>
+        <p className="quiz-description">This quiz contains multiple-choice questions. Select the correct answer for each question.</p>
 
         {questions.map((q, index) => (
-          <div key={index} style={{ marginBottom: '20px' }}>
-            <h3>{q.question}</h3>
+          <div key={index} className="question-block">
+            <h3 className="question-text">{q.question}</h3>
             {q.options.map((option, optionIndex) => (
               <button
                 key={optionIndex}
                 onClick={() => handleAnswer(index, optionIndex)}
-                style={{
-                  display: 'block',
-                  width: '100%',
-                  padding: '10px',
-                  margin: '5px 0',
-                  backgroundColor: selectedAnswers[index] === optionIndex ? '#d3d3d3' : '#f0f0f0',
-                  cursor: 'pointer',
-                  borderRadius: '5px',
-                }}
+                className={`option-button ${selectedAnswers[index] === optionIndex ? 'selected' : ''}`}
               >
                 {option}
               </button>
@@ -76,15 +62,16 @@ const Questions = () => {
         ))}
       </div>
 
-      {/* Notes Section */}
-      <div style={{ width: '30%', padding: '0 20px' }}>
-        <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#ffebcd', borderRadius: '5px' }}>
-          <h2>Explanation</h2>
+      <div className="notes-section">
+        <div className="feedback-box">
+          <h2>Feedback</h2>
           {feedback.map((text, index) => (
-            <p key={index}>{text || "Select an answer to get feedback."}</p>
+            <p key={index} className={`feedback-text ${text?.startsWith('🎉') ? 'correct' : 'incorrect'}`}>
+              {text || "Select an answer to get feedback."}
+            </p>
           ))}
         </div>
-        <div style={{ padding: '15px', backgroundColor: '#e0ffff', borderRadius: '5px' }}>
+        <div className="hint-box">
           <h2>Hint</h2>
           <p>Use this space for hints on each question.</p>
         </div>
